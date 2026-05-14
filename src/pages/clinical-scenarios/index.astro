@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProcedureCard from '../../components/ProcedureCard.astro';
+
+const scenarios = [
+  {
+    title: 'Subarachnoid Hemorrhage Management',
+    description: 'Comprehensive guide to SAH diagnosis, imaging, treatment decisions, and endovascular options.',
+    icon: '🧠',
+    href: '/clinical-scenarios/sah/',
+    tag: 'High Risk',
+    riskLevel: 'high' as const,
+  },
+  {
+    title: 'Unruptured Aneurysm Evaluation',
+    description: 'Assessment of incidental aneurysms and decision-making for treatment vs. observation.',
+    icon: '⚡',
+    href: '/clinical-scenarios/unruptured-aneurysm/',
+    tag: 'Moderate Risk',
+    riskLevel: 'moderate' as const,
+  },
+  {
+    title: 'AVM Pre-Procedure Planning',
+    description: 'Classification systems (Spetzler-Martin), risk assessment, and embolization planning.',
+    icon: '🎯',
+    href: '/clinical-scenarios/avm-planning/',
+    tag: 'Planning',
+  },
+  {
+    title: 'DAVF Management Strategy',
+    description: 'Dural arteriovenous fistula evaluation and treatment planning.',
+    icon: '🔄',
+    href: '/clinical-scenarios/davf/',
+    tag: 'Planning',
+  },
+];
+---
+
+<BaseLayout title="Clinical Scenarios" description="Learn by clinical context">
+  <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+    <div class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Clinical Scenarios</h1>
+      <p class="text-lg text-gray-700 mb-8 max-w-2xl">
+        Organized by real clinical cases. Each scenario guides you through diagnosis, evaluation, and treatment options for common interventional neurology presentations.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {scenarios.map((scenario) => (
+        <ProcedureCard {...scenario} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

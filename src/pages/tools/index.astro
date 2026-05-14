@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProcedureCard from '../../components/ProcedureCard.astro';
+
+const toolCategories = [
+  {
+    title: 'Vascular Assessment',
+    description: 'Classification systems, risk stratification tools, and diagnostic frameworks for vascular lesions.',
+    icon: '📊',
+    href: '/tools/vascular-assessment/',
+    tag: '4+ Tools',
+  },
+  {
+    title: 'Procedural Checklists',
+    description: 'Step-by-step checklists for all common interventional neurology procedures.',
+    icon: '✅',
+    href: '/tools/procedural-checklists/',
+    tag: '8+ Procedures',
+  },
+  {
+    title: 'Technique & Strategy',
+    description: 'Device selection, technique comparisons, and treatment strategy decision trees.',
+    icon: '🧬',
+    href: '/tools/technique-strategy/',
+    tag: 'Interactive',
+  },
+  {
+    title: 'Neurointerventional Devices',
+    description: 'Complete device database, sizing tools, and compatibility information.',
+    icon: '🔧',
+    href: '/tools/devices/',
+    tag: 'Reference',
+  },
+];
+---
+
+<BaseLayout title="Tools" description="Organized by purpose">
+  <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+    <div class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Tools & Resources</h1>
+      <p class="text-lg text-gray-700 mb-8 max-w-2xl">
+        Professional tools for clinical decision-making. Find checklists, calculators, classifications, and device information organized by purpose.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {toolCategories.map((category) => (
+        <ProcedureCard {...category} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

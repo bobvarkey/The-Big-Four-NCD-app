@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProcedureCard from '../../components/ProcedureCard.astro';
+
+const resources = [
+  {
+    title: 'Decision Trees',
+    description: 'Interactive flowcharts for treatment decisions, risk assessment, and clinical judgment.',
+    icon: '📋',
+    href: '/learning-resources/decision-trees/',
+    tag: '15+ Trees',
+  },
+  {
+    title: 'Clinical Calculators',
+    description: 'PHASES score, Raymond-Roy classification, risk calculators, and other clinical tools.',
+    icon: '🧮',
+    href: '/learning-resources/calculators/',
+    tag: 'Interactive',
+  },
+  {
+    title: 'Quick Reference Cards',
+    description: 'Printable checklists, summaries, and pocket reference materials for the OR/lab.',
+    icon: '📑',
+    href: '/learning-resources/quick-reference/',
+    tag: 'Printable',
+  },
+  {
+    title: 'Clinical Trials Reference',
+    description: 'Comprehensive guide to major interventional neuro trials and their key findings.',
+    icon: '📚',
+    href: '/learning-resources/clinical-trials/',
+    tag: 'NEW',
+  },
+];
+---
+
+<BaseLayout title="Learning Resources" description="Educational materials">
+  <div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+    <div class="mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-primary-600 mb-4">Learning Resources</h1>
+      <p class="text-lg text-gray-700 mb-8 max-w-2xl">
+        Educational materials to deepen your understanding. From interactive decision trees to clinical trials data, explore resources organized by learning style.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {resources.map((resource) => (
+        <ProcedureCard {...resource} />
+      ))}
+    </div>
+  </div>
+</BaseLayout>

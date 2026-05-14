@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="About the platform">
+  <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+    <h1 class="text-3xl md:text-4xl font-bold text-primary-600 mb-6">About This Platform</h1>
+
+    <div class="space-y-6 text-gray-700">
+      <p class="text-lg">
+        <strong>Interventional Neuro Reference</strong> is a unified clinical decision-support platform designed specifically for residents and fellows training in interventional neurology.
+      </p>
+
+      <div>
+        <h2 class="text-xl font-bold text-primary-600 mb-3">Purpose</h2>
+        <p>
+          This platform consolidates clinical assessment tools, procedural checklists, decision trees, and reference materials into a single, cohesive learning environment. It serves as a quick reference during case discussions and rounds, supporting clinical decision-making based on current evidence and best practices.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-primary-600 mb-3">Design Philosophy</h2>
+        <p>
+          Organized by clinical context, not by traditional category boundaries. When you encounter a patient with subarachnoid hemorrhage, you'll find all relevant tools, checklists, and decision frameworks in one place—exactly what you need for that clinical scenario.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-primary-600 mb-3">Key Features</h2>
+        <ul class="list-disc list-inside space-y-2">
+          <li>Fast, lightweight design optimized for use in the OR and cath lab</li>
+          <li>Offline access to all reference materials</li>
+          <li>Interactive decision trees and clinical calculators</li>
+          <li>Searchable procedure checklists and protocols</li>
+          <li>Comprehensive clinical trials reference</li>
+          <li>Evidence-based classification systems</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-primary-600 mb-3">Educational Focus</h2>
+        <p>
+          Materials on this platform are curated for resident and fellow training. While evidence-based and current, this is an educational resource and should not replace formal clinical judgment or institutional protocols.
+        </p>
+      </div>
+
+      <div class="bg-gray-50 border-l-4 border-clinical-blue p-6 rounded mt-8">
+        <p class="text-sm text-gray-700">
+          <strong>Disclaimer:</strong> This platform is provided for educational purposes. While we strive to maintain current and accurate information, clinical decision-making should always incorporate institutional protocols, attending supervision, and individual patient factors.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
