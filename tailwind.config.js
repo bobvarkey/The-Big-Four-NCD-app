@@ -1,0 +1,83 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    './src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c3d66',
+          950: '#0f172a',
+        },
+        accent: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c3d66',
+          950: '#0f172a',
+        },
+        clinical: {
+          blue: '#0369a1',
+          success: '#10b981',
+          warning: '#f59e0b',
+          danger: '#ef4444',
+          info: '#3b82f6',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+        serif: ['Georgia', 'serif'],
+      },
+      fontSize: {
+        xs: ['0.75rem', '1rem'],
+        sm: ['0.875rem', '1.25rem'],
+        base: ['1rem', '1.5rem'],
+        lg: ['1.125rem', '1.75rem'],
+        xl: ['1.25rem', '1.75rem'],
+        '2xl': ['1.5rem', '2rem'],
+        '3xl': ['1.875rem', '2.25rem'],
+        '4xl': ['2.25rem', '2.5rem'],
+        '5xl': ['3rem', '1'],
+      },
+      spacing: {
+        xs: '0.25rem',
+        sm: '0.5rem',
+        md: '1rem',
+        lg: '1.5rem',
+        xl: '2rem',
+        '2xl': '3rem',
+        '3xl': '4rem',
+      },
+      borderRadius: {
+        none: '0',
+        sm: '0.25rem',
+        DEFAULT: '0.375rem',
+        md: '0.5rem',
+        lg: '0.75rem',
+        xl: '1rem',
+        '2xl': '1.5rem',
+        full: '9999px',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
+};
