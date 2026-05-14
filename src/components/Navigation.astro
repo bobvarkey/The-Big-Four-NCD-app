@@ -1,0 +1,72 @@
+---
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Clinical Scenarios', href: '/scenarios' },
+  { label: 'Tools', href: '/tools' },
+  { label: 'Learning Resources', href: '/resources' },
+  { label: 'About', href: '/about' },
+];
+
+const mobileItems = [
+  { label: 'Home', href: '/', icon: 'home' },
+  { label: 'Scenarios', href: '/scenarios', icon: 'scenarios' },
+  { label: 'Tools', href: '/tools', icon: 'tools' },
+  { label: 'Resources', href: '/resources', icon: 'resources' },
+  { label: 'More', href: '#', icon: 'menu' },
+];
+---
+
+<!-- Desktop Navigation -->
+<nav class="hidden md:block bg-white border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-8 h-14">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="text-gray-700 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent pb-1"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 shadow-lg">
+  <div class="flex items-center justify-around h-16">
+    {mobileItems.map((item) => (
+      <a
+        href={item.href}
+        class="flex flex-col items-center justify-center w-full h-full text-gray-700 hover:text-accent transition-colors gap-1"
+      >
+        {item.icon === 'home' && (
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4v4" />
+          </svg>
+        )}
+        {item.icon === 'scenarios' && (
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.228 6.228 2 10.228 2 15s4.228 8.772 10 8.772 10-4.228 10-8.772C22 10.228 17.772 6.228 12 6.253z" />
+          </svg>
+        )}
+        {item.icon === 'tools' && (
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+        )}
+        {item.icon === 'resources' && (
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.228 6.228 2 10.228 2 15s4.228 8.772 10 8.772 10-4.228 10-8.772C22 10.228 17.772 6.228 12 6.253z" />
+          </svg>
+        )}
+        {item.icon === 'menu' && (
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+        <span class="text-xs">{item.label}</span>
+      </a>
+    ))}
+  </div>
+</nav>

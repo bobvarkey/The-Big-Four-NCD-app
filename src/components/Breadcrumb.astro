@@ -1,0 +1,33 @@
+---
+export interface Props {
+  items?: Array<{ label: string; href: string }>;
+}
+
+const { items = [] } = Astro.props;
+
+// Always start with Home
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  ...items,
+];
+---
+
+<nav class="bg-gray-50 border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-2 h-10 text-sm">
+      {breadcrumbs.map((item, index) => (
+        <>
+          <a
+            href={item.href}
+            class="text-gray-700 hover:text-accent transition-colors"
+          >
+            {item.label}
+          </a>
+          {index < breadcrumbs.length - 1 && (
+            <span class="text-gray-400">/</span>
+          )}
+        </>
+      ))}
+    </div>
+  </div>
+</nav>
