@@ -787,6 +787,103 @@ export default function Home() {
         if (values.tg) setLipInputs(prev => ({ ...prev, tg: values.tg }));
       }} />
 
+      {/* Global Associated Conditions */}
+      <Card className="max-w-6xl mx-auto px-6 mb-6 border-border/60">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center">
+              <Activity className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-base">Associated Conditions</CardTitle>
+              <p className="text-xs text-muted-foreground">Select all relevant comorbidities first</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-red-400 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />Diabetes
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "cvd", label: "CVD", state: "dm" },
+                  { key: "hf", label: "Heart Failure", state: "dm" },
+                  { key: "ckd", label: "CKD", state: "dm" },
+                  { key: "obesity", label: "Obesity", state: "dm" },
+                ].map(({ key, label }) => (
+                  <label key={`dm-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={dmChecks[key as keyof typeof dmChecks]} onCheckedChange={checked => setDmChecks({ ...dmChecks, [key]: checked as boolean })} className="h-3 w-3" />
+                    <span className="text-[10px]">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-orange-400 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />Hypertension
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "DM" },
+                  { key: "ckd", label: "CKD" },
+                  { key: "cad", label: "CAD" },
+                  { key: "stroke", label: "Prior Stroke" },
+                  { key: "hf", label: "HF" },
+                ].map(({ key, label }) => (
+                  <label key={`htn-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={htnChecks[key as keyof typeof htnChecks]} onCheckedChange={checked => setHtnChecks({ ...htnChecks, [key]: checked as boolean })} className="h-3 w-3" />
+                    <span className="text-[10px]">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-blue-400 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />Lipids
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "DM" },
+                  { key: "smoker", label: "Smoker" },
+                  { key: "htn", label: "HTN" },
+                  { key: "fhx", label: "Family Hx" },
+                  { key: "ascvd", label: "ASCVD" },
+                ].map(({ key, label }) => (
+                  <label key={`lip-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={lipChecks[key as keyof typeof lipChecks]} onCheckedChange={checked => setLipChecks({ ...lipChecks, [key]: checked as boolean })} className="h-3 w-3" />
+                    <span className="text-[10px]">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-violet-400 flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />Obesity
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: "dm", label: "Type 2 DM" },
+                  { key: "htn", label: "HTN" },
+                  { key: "dyslipidemia", label: "Dyslipidemia" },
+                  { key: "osa", label: "OSA" },
+                  { key: "nafld", label: "NAFLD" },
+                ].map(({ key, label }) => (
+                  <label key={`obe-${key}`} className="flex items-center gap-1.5 px-2 py-1 bg-muted/40 rounded border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
+                    <Checkbox checked={obeChecks[key as keyof typeof obeChecks]} onCheckedChange={checked => setObeChecks({ ...obeChecks, [key]: checked as boolean })} className="h-3 w-3" />
+                    <span className="text-[10px]">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Grid */}
       <div className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Diabetes Card */}
@@ -802,76 +899,11 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="FG" />
-                <Input type="number" placeholder="e.g. 140" value={dmInputs.fg} onChange={e => setDmInputs({ ...dmInputs, fg: e.target.value })} className="h-9" />
-              </div>
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="HbA1c" />
-                <Input type="number" step="0.1" placeholder="e.g. 7.5" value={dmInputs.a1c} onChange={e => setDmInputs({ ...dmInputs, a1c: e.target.value })} className="h-9" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="PP" />
-                <Input type="number" placeholder="e.g. 200" value={dmInputs.pp} onChange={e => setDmInputs({ ...dmInputs, pp: e.target.value })} className="h-9" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
-                <Input type="number" placeholder="e.g. 55" value={dmInputs.age} onChange={e => setDmInputs({ ...dmInputs, age: e.target.value })} className="h-9" />
-              </div>
-            </div>
-            <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
-              <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Creatinine Clearance (Cockcroft-Gault)</p>
-              <div className="grid grid-cols-5 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-[10px] font-medium text-muted-foreground/70">Sex</Label>
-                  <Select value={dmSex} onValueChange={(v: "male" | "female") => setDmSex(v)}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px] font-medium text-muted-foreground/70">Age <span className="text-muted-foreground/50">yrs</span></Label>
-                  <Input type="number" placeholder="55" value={dmInputs.age} onChange={e => setDmInputs({ ...dmInputs, age: e.target.value })} className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px] font-medium text-muted-foreground/70">Weight <span className="text-muted-foreground/50">kg</span></Label>
-                  <Input type="number" placeholder="70" value={dmInputs.weight} onChange={e => setDmInputs({ ...dmInputs, weight: e.target.value })} className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px] font-medium text-muted-foreground/70">Creat <span className="text-muted-foreground/50">mg/dL</span></Label>
-                  <Input type="number" step="0.01" placeholder="1.0" value={dmInputs.creatinine} onChange={e => {
-                    const val = e.target.value;
-                    setDmInputs(prev => {
-                      const newInputs = { ...prev, creatinine: val };
-                      const crea = parseFloat(val) || 0;
-                      const age = parseFloat(prev.age) || 0;
-                      const weight = parseFloat(prev.weight) || 0;
-                      if (crea > 0 && age > 0 && weight > 0) {
-                        newInputs.egfr = calculateCrCl(crea, age, weight, dmSex).toString();
-                      }
-                      return newInputs;
-                    });
-                  }} className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <AbbreviationLabel abbr="CrCl" />
-                  <Input type="number" placeholder="90" value={dmInputs.egfr} onChange={e => setDmInputs({ ...dmInputs, egfr: e.target.value })} className="h-8 text-xs bg-muted/50" />
-                </div>
-              </div>
-              {dmInputs.creatinine && dmInputs.age && dmInputs.weight && (
-                <p className="text-[10px] text-muted-foreground mt-1.5">C-G calculated: {calculateCrCl(parseFloat(dmInputs.creatinine) || 0, parseFloat(dmInputs.age) || 0, parseFloat(dmInputs.weight) || 0, dmSex)} mL/min</p>
-              )}
-            </div>
+            {/* Comorbidities - moved to top */}
             <div className="space-y-2">
-              <Label className="text-xs uppercase text-muted-foreground">Comorbidities</Label>
+              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />Associated Conditions
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { key: "cvd", label: "CVD" },
@@ -886,6 +918,89 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* Essential Labs */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <AbbreviationLabel abbr="FG" />
+                <Input type="number" placeholder="e.g. 140" value={dmInputs.fg} onChange={e => setDmInputs({ ...dmInputs, fg: e.target.value })} className="h-9" />
+              </div>
+              <div className="space-y-1.5">
+                <AbbreviationLabel abbr="HbA1c" />
+                <Input type="number" step="0.1" placeholder="e.g. 7.5" value={dmInputs.a1c} onChange={e => setDmInputs({ ...dmInputs, a1c: e.target.value })} className="h-9" />
+              </div>
+            </div>
+
+            {/* Collapsible Advanced Section */}
+            <Collapsible className="border border-border/40 rounded-lg overflow-hidden">
+              <CollapsibleTrigger asChild>
+                <button className="w-full px-3 py-2 flex items-center justify-between bg-muted/20 hover:bg-muted/30 transition-colors text-xs font-medium text-muted-foreground">
+                  <span>Advanced Labs (PP, CrCl Calculator)</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3 space-y-3 bg-muted/10">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <AbbreviationLabel abbr="PP" />
+                    <Input type="number" placeholder="e.g. 200" value={dmInputs.pp} onChange={e => setDmInputs({ ...dmInputs, pp: e.target.value })} className="h-9" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
+                    <Input type="number" placeholder="e.g. 55" value={dmInputs.age} onChange={e => setDmInputs({ ...dmInputs, age: e.target.value })} className="h-9" />
+                  </div>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Creatinine Clearance (Cockcroft-Gault)</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-medium text-muted-foreground/70">Sex</Label>
+                      <Select value={dmSex} onValueChange={(v: "male" | "female") => setDmSex(v)}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-medium text-muted-foreground/70">Age <span className="text-muted-foreground/50">yrs</span></Label>
+                      <Input type="number" placeholder="55" value={dmInputs.age} onChange={e => setDmInputs({ ...dmInputs, age: e.target.value })} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-medium text-muted-foreground/70">Weight <span className="text-muted-foreground/50">kg</span></Label>
+                      <Input type="number" placeholder="70" value={dmInputs.weight} onChange={e => setDmInputs({ ...dmInputs, weight: e.target.value })} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-medium text-muted-foreground/70">Creat <span className="text-muted-foreground/50">mg/dL</span></Label>
+                      <Input type="number" step="0.01" placeholder="1.0" value={dmInputs.creatinine} onChange={e => {
+                        const val = e.target.value;
+                        setDmInputs(prev => {
+                          const newInputs = { ...prev, creatinine: val };
+                          const crea = parseFloat(val) || 0;
+                          const age = parseFloat(prev.age) || 0;
+                          const weight = parseFloat(prev.weight) || 0;
+                          if (crea > 0 && age > 0 && weight > 0) {
+                            newInputs.egfr = calculateCrCl(crea, age, weight, dmSex).toString();
+                          }
+                          return newInputs;
+                        });
+                      }} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <AbbreviationLabel abbr="CrCl" />
+                      <Input type="number" placeholder="90" value={dmInputs.egfr} onChange={e => setDmInputs({ ...dmInputs, egfr: e.target.value })} className="h-8 text-xs bg-muted/50" />
+                    </div>
+                  </div>
+                  {dmInputs.creatinine && dmInputs.age && dmInputs.weight && (
+                    <p className="text-[10px] text-muted-foreground mt-1.5">C-G calculated: {calculateCrCl(parseFloat(dmInputs.creatinine) || 0, parseFloat(dmInputs.age) || 0, parseFloat(dmInputs.weight) || 0, dmSex)} mL/min</p>
+                  )}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             <div className="flex gap-2 pt-1">
               <Button onClick={generateDiabetesRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.diabetes.bg}, rgba(248,113,113,0.08))`, borderColor: categoryColors.diabetes.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
@@ -913,37 +1028,11 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="SBP" />
-                <Input type="number" placeholder="e.g. 150" value={htnInputs.sbp} onChange={e => setHtnInputs({ ...htnInputs, sbp: e.target.value })} className="h-9" />
-              </div>
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="DBP" />
-                <Input type="number" placeholder="e.g. 95" value={htnInputs.dbp} onChange={e => setHtnInputs({ ...htnInputs, dbp: e.target.value })} className="h-9" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
-                <Input type="number" placeholder="e.g. 62" value={htnInputs.age} onChange={e => setHtnInputs({ ...htnInputs, age: e.target.value })} className="h-9" />
-              </div>
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="BP" fullForm="Target Blood Pressure" />
-                <Select value={htnTarget} onValueChange={setHtnTarget}>
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">&lt;140/90 (Standard)</SelectItem>
-                    <SelectItem value="intensive">&lt;130/80 (Intensive)</SelectItem>
-                    <SelectItem value="elderly">&lt;150/90 (Elderly &gt;80)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            {/* Associated Conditions - moved to top */}
             <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Comorbidities</Label>
+              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />Associated Conditions
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { key: "dm", label: "Diabetes", abbr: "DM" },
@@ -959,6 +1048,50 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* Essential Vitals */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <AbbreviationLabel abbr="SBP" />
+                <Input type="number" placeholder="e.g. 150" value={htnInputs.sbp} onChange={e => setHtnInputs({ ...htnInputs, sbp: e.target.value })} className="h-9" />
+              </div>
+              <div className="space-y-1.5">
+                <AbbreviationLabel abbr="DBP" />
+                <Input type="number" placeholder="e.g. 95" value={htnInputs.dbp} onChange={e => setHtnInputs({ ...htnInputs, dbp: e.target.value })} className="h-9" />
+              </div>
+            </div>
+
+            {/* Collapsible Target/Advanced */}
+            <Collapsible className="border border-border/40 rounded-lg overflow-hidden">
+              <CollapsibleTrigger asChild>
+                <button className="w-full px-3 py-2 flex items-center justify-between bg-muted/20 hover:bg-muted/30 transition-colors text-xs font-medium text-muted-foreground">
+                  <span>Target BP & Additional Info</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3 space-y-3 bg-muted/10">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
+                    <Input type="number" placeholder="e.g. 62" value={htnInputs.age} onChange={e => setHtnInputs({ ...htnInputs, age: e.target.value })} className="h-9" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <AbbreviationLabel abbr="BP" fullForm="Target Blood Pressure" />
+                    <Select value={htnTarget} onValueChange={setHtnTarget}>
+                      <SelectTrigger className="h-9 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard">&lt;140/90 (Standard)</SelectItem>
+                        <SelectItem value="intensive">&lt;130/80 (Intensive)</SelectItem>
+                        <SelectItem value="elderly">&lt;150/90 (Elderly &gt;80)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             <div className="flex gap-2 pt-1">
               <Button onClick={generateHtnRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.hypertension.bg}, rgba(251,146,60,0.08))`, borderColor: categoryColors.hypertension.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
@@ -986,28 +1119,11 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="LDL" />
-                <Input type="number" placeholder="e.g. 130" value={lipInputs.ldl} onChange={e => setLipInputs({ ...lipInputs, ldl: e.target.value })} className="h-9" />
-              </div>
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="HDL" />
-                <Input type="number" placeholder="e.g. 45" value={lipInputs.hdl} onChange={e => setLipInputs({ ...lipInputs, hdl: e.target.value })} className="h-9" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <AbbreviationLabel abbr="TG" fullForm="Triglycerides" />
-                <Input type="number" placeholder="e.g. 180" value={lipInputs.tg} onChange={e => setLipInputs({ ...lipInputs, tg: e.target.value })} className="h-9" />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
-                <Input type="number" placeholder="e.g. 55" value={lipInputs.age} onChange={e => setLipInputs({ ...lipInputs, age: e.target.value })} className="h-9" />
-              </div>
-            </div>
+            {/* Risk Factors - moved to top */}
             <div className="space-y-2">
-              <Label className="text-xs font-medium text-muted-foreground">Risk Factors</Label>
+              <Label className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />Risk Factors
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { key: "dm", label: "Diabetes", abbr: "DM" },
@@ -1023,6 +1139,41 @@ export default function Home() {
                 ))}
               </div>
             </div>
+
+            {/* Essential Labs */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <AbbreviationLabel abbr="LDL" />
+                <Input type="number" placeholder="e.g. 130" value={lipInputs.ldl} onChange={e => setLipInputs({ ...lipInputs, ldl: e.target.value })} className="h-9" />
+              </div>
+              <div className="space-y-1.5">
+                <AbbreviationLabel abbr="HDL" />
+                <Input type="number" placeholder="e.g. 45" value={lipInputs.hdl} onChange={e => setLipInputs({ ...lipInputs, hdl: e.target.value })} className="h-9" />
+              </div>
+            </div>
+
+            {/* Collapsible Additional Labs */}
+            <Collapsible className="border border-border/40 rounded-lg overflow-hidden">
+              <CollapsibleTrigger asChild>
+                <button className="w-full px-3 py-2 flex items-center justify-between bg-muted/20 hover:bg-muted/30 transition-colors text-xs font-medium text-muted-foreground">
+                  <span>Additional Labs (TG, Age)</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3 space-y-3 bg-muted/10">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <AbbreviationLabel abbr="TG" fullForm="Triglycerides" />
+                    <Input type="number" placeholder="e.g. 180" value={lipInputs.tg} onChange={e => setLipInputs({ ...lipInputs, tg: e.target.value })} className="h-9" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
+                    <Input type="number" placeholder="e.g. 55" value={lipInputs.age} onChange={e => setLipInputs({ ...lipInputs, age: e.target.value })} className="h-9" />
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             <div className="flex gap-2 pt-1">
               <Button onClick={generateLipidRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.lipid.bg}, rgba(96,165,250,0.08))`, borderColor: categoryColors.lipid.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
