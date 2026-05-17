@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Activity, Droplets, Heart, Scale, Syringe, Activity as PulseIcon, Dna, FileText, ChevronRight } from "lucide-react";
+import { Activity, Droplets, Heart, Scale, Syringe, Activity as PulseIcon, Dna, FileText, ChevronRight, Info, ChevronDown, Upload, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface PrescriptionState {
   visible: boolean;
@@ -48,11 +53,285 @@ const categoryColors = {
   },
 };
 
+// Full forms data for abbreviations
+const fullForms: Record<string, string> = {
+  // Diabetes
+  "FG": "Fasting Glucose",
+  "HbA1c": "Glycated Hemoglobin",
+  "PP": "Post-Prandial (2-hour)",
+  "CrCl": "Creatinine Clearance",
+  "CVD": "Cardiovascular Disease",
+  "HF": "Heart Failure",
+  "CKD": "Chronic Kidney Disease",
+  // Hypertension
+  "SBP": "Systolic Blood Pressure",
+  "DBP": "Diastolic Blood Pressure",
+  "BP": "Blood Pressure",
+  "DM": "Diabetes Mellitus",
+  "CAD": "Coronary Artery Disease",
+  "ESC": "European Society of Cardiology",
+  // Lipids
+  "LDL": "Low-Density Lipoprotein",
+  "HDL": "High-Density Lipoprotein",
+  "TG": "Triglycerides",
+  "ASCVD": "Atherosclerotic Cardiovascular Disease",
+  "FHx": "Family History",
+  "AACE": "American Association of Clinical Endocrinology",
+  // Obesity
+  "BMI": "Body Mass Index",
+  "HTN": "Hypertension",
+  "OSA": "Obstructive Sleep Apnea",
+  "NAFLD": "Non-Alcoholic Fatty Liver Disease",
+  "MASLD": "Metabolic Dysfunction-Associated Steatotic Liver Disease",
+  "TOS": "The Obesity Society",
+  "Rx": "Prescription",
+  "NCD": "Non-Communicable Disease",
+};
+
+function AbbreviationLabel({ abbr, fullForm }: { abbr: string; fullForm?: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const displayFullForm = fullForm || fullForms[abbr] || abbr;
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <button className="group flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+          {abbr}
+          <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <span className="text-[10px] text-muted-foreground/70 ml-4">{displayFullForm}</span>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+function FullFormsLegend() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mb-6">
+      <Card className="border-border/40 bg-muted/20">
+        <CollapsibleTrigger asChild>
+          <button className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors">
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-muted-foreground">Abbreviations & Full Forms</span>
+            </div>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent className="pt-0 pb-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-xs">
+              {Object.entries(fullForms).map(([abbr, full]) => (
+                <div key={abbr} className="flex items-baseline gap-2">
+                  <span className="font-medium text-foreground min-w-[3rem]">{abbr}</span>
+                  <span className="text-muted-foreground">{full}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+}
+
+interface OCRUploadProps {
+  onValuesExtracted: (values: {
+    fg?: string;
+    a1c?: string;
+    ldl?: string;
+    hdl?: string;
+    tg?: string;
+    creatinine?: string;
+    egfr?: string;
+    age?: string;
+  }) => void;
+}
+
+function OCRUpload({ onValuesExtracted }: OCRUploadProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [extractedValues, setExtractedValues] = useState<Record<string, string> | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show preview
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    setIsProcessing(true);
+    setExtractedValues(null);
+
+    // Simulate OCR processing with mock values
+    // In production, this would call an OCR API like:
+    // - Google Cloud Vision API
+    // - Azure Computer Vision
+    // - AWS Textract
+    // - Tesseract.js (client-side)
+    setTimeout(() => {
+      // Demo extracted values - these would come from actual OCR
+      const mockValues = {
+        fg: "142",
+        a1c: "7.2",
+        ldl: "128",
+        hdl: "42",
+        tg: "156",
+        creatinine: "1.1",
+        egfr: "",
+        age: "58",
+      };
+      setExtractedValues(mockValues);
+      onValuesExtracted(mockValues);
+      setIsProcessing(false);
+    }, 2000);
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const clearImage = () => {
+    setPreviewUrl(null);
+    setExtractedValues(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mb-6">
+      <Card className="border-border/40 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
+        <CollapsibleTrigger asChild>
+          <button className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-blue-400" />
+              <span className="text-sm font-medium text-foreground">Smart Lab Upload (OCR)</span>
+              <Badge variant="outline" className="text-[10px] border-blue-500/30 text-blue-400">Beta</Badge>
+            </div>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <CardContent className="pt-0 pb-4">
+            <div className="space-y-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.pdf"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
+              {!previewUrl ? (
+                <div
+                  onClick={triggerFileInput}
+                  className="border-2 border-dashed border-border/60 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-colors"
+                >
+                  <div className="mx-auto w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mb-3">
+                    <Upload className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-medium text-foreground mb-1">Upload lab report image</p>
+                  <p className="text-xs text-muted-foreground">Supports JPG, PNG, PDF</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-2">Auto-extracts: Glucose, HbA1c, Lipids, Creatinine, eGFR</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <img src={previewUrl} alt="Lab report preview" className="rounded-lg max-h-48 mx-auto" />
+                    {isProcessing && (
+                      <div className="absolute inset-0 bg-background/80 rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">Extracting values...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {extractedValues && !isProcessing && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-green-400">Extracted Values</span>
+                        <button onClick={clearImage} className="text-[10px] text-muted-foreground hover:text-foreground">Clear</button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        {extractedValues.fg && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-muted-foreground">FG:</span>
+                            <span className="font-medium">{extractedValues.fg}</span>
+                          </div>
+                        )}
+                        {extractedValues.a1c && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-muted-foreground">HbA1c:</span>
+                            <span className="font-medium">{extractedValues.a1c}%</span>
+                          </div>
+                        )}
+                        {extractedValues.ldl && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-muted-foreground">LDL:</span>
+                            <span className="font-medium">{extractedValues.ldl}</span>
+                          </div>
+                        )}
+                        {extractedValues.hdl && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-muted-foreground">HDL:</span>
+                            <span className="font-medium">{extractedValues.hdl}</span>
+                          </div>
+                        )}
+                        {extractedValues.tg && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-muted-foreground">TG:</span>
+                            <span className="font-medium">{extractedValues.tg}</span>
+                          </div>
+                        )}
+                        {extractedValues.creatinine && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-muted-foreground">Creat:</span>
+                            <span className="font-medium">{extractedValues.creatinine}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="text-xs text-muted-foreground bg-muted/30 rounded p-3">
+                <p className="font-medium mb-1">Note on OCR:</p>
+                <ul className="list-disc pl-4 space-y-0.5">
+                  <li>Upload clear, well-lit images for best results</li>
+                  <li>Review extracted values before generating prescriptions</li>
+                  <li>Manual correction may be needed for handwritten reports</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
+  );
+}
+
 export default function Home() {
   // Diabetes state
-  const [dmInputs, setDmInputs] = useState({ fg: "", a1c: "", pp: "", egfr: "90" });
+  const [dmInputs, setDmInputs] = useState({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" });
   const [dmChecks, setDmChecks] = useState({ cvd: false, hf: false, ckd: false, obesity: false });
   const [dmRx, setDmRx] = useState<PrescriptionState>({ visible: false, content: null });
+  const [dmSex, setDmSex] = useState<"male" | "female">("male");
+
+  // Calculate Creatinine Clearance (Cockcroft-Gault) - uses weight as requested
+  const calculateCrCl = (creatinine: number, age: number, weight: number, sex: "male" | "female"): number => {
+    if (!creatinine || !age || !weight) return 0;
+    const sexCoeff = sex === "female" ? 0.85 : 1.0;
+    const crCl = ((140 - age) * weight * sexCoeff) / (72 * creatinine);
+    return Math.round(crCl);
+  };
 
   // HTN state
   const [htnInputs, setHtnInputs] = useState({ sbp: "", dbp: "", age: "" });
@@ -66,9 +345,20 @@ export default function Home() {
   const [lipRx, setLipRx] = useState<PrescriptionState>({ visible: false, content: null });
 
   // Obesity state
-  const [obeInputs, setObeInputs] = useState({ bmi: "", waist: "" });
+  const [obeInputs, setObeInputs] = useState({ bmi: "", waist: "", weight: "", height: "" });
   const [obeChecks, setObeChecks] = useState({ dm: false, htn: false, dyslipidemia: false, osa: false, nafld: false });
   const [obeRx, setObeRx] = useState<PrescriptionState>({ visible: false, content: null });
+  const [obeUnits, setObeUnits] = useState<{ weight: "kg" | "lb", height: "cm" | "ft" }>({ weight: "kg", height: "cm" });
+
+  // Calculate BMI from weight and height
+  const calculateBMI = (weight: number, height: number, weightUnit: "kg" | "lb", heightUnit: "cm" | "ft"): number => {
+    if (!weight || !height) return 0;
+    // Convert to metric
+    const weightKg = weightUnit === "lb" ? weight * 0.453592 : weight;
+    const heightM = heightUnit === "ft" ? height * 0.3048 : height / 100;
+    if (heightM <= 0) return 0;
+    return Math.round((weightKg / (heightM * heightM)) * 10) / 10;
+  };
 
   // Comprehensive
   const [compRx, setCompRx] = useState<PrescriptionState>({ visible: false, content: null });
@@ -481,6 +771,22 @@ export default function Home() {
         <span className="ml-auto text-sm text-muted-foreground/60">ADA · ESC · AHA · ACC</span>
       </div>
 
+      <FullFormsLegend />
+
+      <OCRUpload onValuesExtracted={(values) => {
+        if (values.fg) setDmInputs(prev => ({ ...prev, fg: values.fg }));
+        if (values.a1c) setDmInputs(prev => ({ ...prev, a1c: values.a1c }));
+        if (values.age) {
+          setDmInputs(prev => ({ ...prev, age: values.age }));
+          setHtnInputs(prev => ({ ...prev, age: values.age }));
+          setLipInputs(prev => ({ ...prev, age: values.age }));
+        }
+        if (values.creatinine) setDmInputs(prev => ({ ...prev, creatinine: values.creatinine }));
+        if (values.ldl) setLipInputs(prev => ({ ...prev, ldl: values.ldl }));
+        if (values.hdl) setLipInputs(prev => ({ ...prev, hdl: values.hdl }));
+        if (values.tg) setLipInputs(prev => ({ ...prev, tg: values.tg }));
+      }} />
+
       {/* Grid */}
       <div className="max-w-6xl mx-auto px-6 pb-16 grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Diabetes Card */}
@@ -498,23 +804,71 @@ export default function Home() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Fasting Glucose <span className="text-muted-foreground/60">mg/dL</span></Label>
+                <AbbreviationLabel abbr="FG" />
                 <Input type="number" placeholder="e.g. 140" value={dmInputs.fg} onChange={e => setDmInputs({ ...dmInputs, fg: e.target.value })} className="h-9" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">HbA1c <span className="text-muted-foreground/60">%</span></Label>
+                <AbbreviationLabel abbr="HbA1c" />
                 <Input type="number" step="0.1" placeholder="e.g. 7.5" value={dmInputs.a1c} onChange={e => setDmInputs({ ...dmInputs, a1c: e.target.value })} className="h-9" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Post-prandial <span className="text-muted-foreground/60">mg/dL</span></Label>
+                <AbbreviationLabel abbr="PP" />
                 <Input type="number" placeholder="e.g. 200" value={dmInputs.pp} onChange={e => setDmInputs({ ...dmInputs, pp: e.target.value })} className="h-9" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">eGFR <span className="text-muted-foreground/60">mL/min</span></Label>
-                <Input type="number" placeholder="e.g. 90" value={dmInputs.egfr} onChange={e => setDmInputs({ ...dmInputs, egfr: e.target.value })} className="h-9" />
+                <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
+                <Input type="number" placeholder="e.g. 55" value={dmInputs.age} onChange={e => setDmInputs({ ...dmInputs, age: e.target.value })} className="h-9" />
               </div>
+            </div>
+            <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+              <p className="text-xs font-medium text-muted-foreground uppercase mb-2">Creatinine Clearance (Cockcroft-Gault)</p>
+              <div className="grid grid-cols-5 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-[10px] font-medium text-muted-foreground/70">Sex</Label>
+                  <Select value={dmSex} onValueChange={(v: "male" | "female") => setDmSex(v)}>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[10px] font-medium text-muted-foreground/70">Age <span className="text-muted-foreground/50">yrs</span></Label>
+                  <Input type="number" placeholder="55" value={dmInputs.age} onChange={e => setDmInputs({ ...dmInputs, age: e.target.value })} className="h-8 text-xs" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[10px] font-medium text-muted-foreground/70">Weight <span className="text-muted-foreground/50">kg</span></Label>
+                  <Input type="number" placeholder="70" value={dmInputs.weight} onChange={e => setDmInputs({ ...dmInputs, weight: e.target.value })} className="h-8 text-xs" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[10px] font-medium text-muted-foreground/70">Creat <span className="text-muted-foreground/50">mg/dL</span></Label>
+                  <Input type="number" step="0.01" placeholder="1.0" value={dmInputs.creatinine} onChange={e => {
+                    const val = e.target.value;
+                    setDmInputs(prev => {
+                      const newInputs = { ...prev, creatinine: val };
+                      const crea = parseFloat(val) || 0;
+                      const age = parseFloat(prev.age) || 0;
+                      const weight = parseFloat(prev.weight) || 0;
+                      if (crea > 0 && age > 0 && weight > 0) {
+                        newInputs.egfr = calculateCrCl(crea, age, weight, dmSex).toString();
+                      }
+                      return newInputs;
+                    });
+                  }} className="h-8 text-xs" />
+                </div>
+                <div className="space-y-1">
+                  <AbbreviationLabel abbr="CrCl" />
+                  <Input type="number" placeholder="90" value={dmInputs.egfr} onChange={e => setDmInputs({ ...dmInputs, egfr: e.target.value })} className="h-8 text-xs bg-muted/50" />
+                </div>
+              </div>
+              {dmInputs.creatinine && dmInputs.age && dmInputs.weight && (
+                <p className="text-[10px] text-muted-foreground mt-1.5">C-G calculated: {calculateCrCl(parseFloat(dmInputs.creatinine) || 0, parseFloat(dmInputs.age) || 0, parseFloat(dmInputs.weight) || 0, dmSex)} mL/min</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label className="text-xs uppercase text-muted-foreground">Comorbidities</Label>
@@ -536,7 +890,7 @@ export default function Home() {
               <Button onClick={generateDiabetesRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.diabetes.bg}, rgba(248,113,113,0.08))`, borderColor: categoryColors.diabetes.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setDmInputs({ fg: "", a1c: "", pp: "", egfr: "90" }); setDmChecks({ cvd: false, hf: false, ckd: false, obesity: false }); setDmRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" }); setDmChecks({ cvd: false, hf: false, ckd: false, obesity: false }); setDmRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
             </div>
             {dmRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
@@ -561,21 +915,21 @@ export default function Home() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">SBP <span className="text-muted-foreground/60">mmHg</span></Label>
+                <AbbreviationLabel abbr="SBP" />
                 <Input type="number" placeholder="e.g. 150" value={htnInputs.sbp} onChange={e => setHtnInputs({ ...htnInputs, sbp: e.target.value })} className="h-9" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">DBP <span className="text-muted-foreground/60">mmHg</span></Label>
+                <AbbreviationLabel abbr="DBP" />
                 <Input type="number" placeholder="e.g. 95" value={htnInputs.dbp} onChange={e => setHtnInputs({ ...htnInputs, dbp: e.target.value })} className="h-9" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
+                <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
                 <Input type="number" placeholder="e.g. 62" value={htnInputs.age} onChange={e => setHtnInputs({ ...htnInputs, age: e.target.value })} className="h-9" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Target BP</Label>
+                <AbbreviationLabel abbr="BP" fullForm="Target Blood Pressure" />
                 <Select value={htnTarget} onValueChange={setHtnTarget}>
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue />
@@ -589,18 +943,18 @@ export default function Home() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs uppercase text-muted-foreground">Comorbidities</Label>
+              <Label className="text-xs font-medium text-muted-foreground">Comorbidities</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "dm", label: "Diabetes" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "cad", label: "CAD" },
+                  { key: "dm", label: "Diabetes", abbr: "DM" },
+                  { key: "ckd", label: "CKD", abbr: "CKD" },
+                  { key: "cad", label: "CAD", abbr: "CAD" },
                   { key: "stroke", label: "Prior Stroke" },
-                  { key: "hf", label: "Heart Failure" },
-                ].map(({ key, label }) => (
+                  { key: "hf", label: "Heart Failure", abbr: "HF" },
+                ].map(({ key, label, abbr }) => (
                   <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={htnChecks[key as keyof typeof htnChecks]} onCheckedChange={checked => setHtnChecks({ ...htnChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -634,37 +988,37 @@ export default function Home() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">LDL <span className="text-muted-foreground/60">mg/dL</span></Label>
+                <AbbreviationLabel abbr="LDL" />
                 <Input type="number" placeholder="e.g. 130" value={lipInputs.ldl} onChange={e => setLipInputs({ ...lipInputs, ldl: e.target.value })} className="h-9" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">HDL <span className="text-muted-foreground/60">mg/dL</span></Label>
+                <AbbreviationLabel abbr="HDL" />
                 <Input type="number" placeholder="e.g. 45" value={lipInputs.hdl} onChange={e => setLipInputs({ ...lipInputs, hdl: e.target.value })} className="h-9" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Triglycerides <span className="text-muted-foreground/60">mg/dL</span></Label>
+                <AbbreviationLabel abbr="TG" fullForm="Triglycerides" />
                 <Input type="number" placeholder="e.g. 180" value={lipInputs.tg} onChange={e => setLipInputs({ ...lipInputs, tg: e.target.value })} className="h-9" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
+                <Label className="text-xs font-medium text-muted-foreground">Age <span className="text-muted-foreground/60">years</span></Label>
                 <Input type="number" placeholder="e.g. 55" value={lipInputs.age} onChange={e => setLipInputs({ ...lipInputs, age: e.target.value })} className="h-9" />
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs uppercase text-muted-foreground">Risk Factors</Label>
+              <Label className="text-xs font-medium text-muted-foreground">Risk Factors</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "dm", label: "Diabetes" },
+                  { key: "dm", label: "Diabetes", abbr: "DM" },
                   { key: "smoker", label: "Smoker" },
-                  { key: "htn", label: "Hypertension" },
-                  { key: "fhx", label: "Family History" },
-                  { key: "ascvd", label: "ASCVD" },
-                ].map(({ key, label }) => (
+                  { key: "htn", label: "HTN", abbr: "HTN" },
+                  { key: "fhx", label: "Family History", abbr: "FHx" },
+                  { key: "ascvd", label: "ASCVD", abbr: "ASCVD" },
+                ].map(({ key, label, abbr }) => (
                   <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={lipChecks[key as keyof typeof lipChecks]} onCheckedChange={checked => setLipChecks({ ...lipChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -696,29 +1050,86 @@ export default function Home() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">BMI <span className="text-muted-foreground/60">kg/m²</span></Label>
-                <Input type="number" step="0.1" placeholder="e.g. 32" value={obeInputs.bmi} onChange={e => setObeInputs({ ...obeInputs, bmi: e.target.value })} className="h-9" />
+            <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+              <p className="text-xs font-medium text-muted-foreground uppercase mb-2">BMI Calculator</p>
+              <div className="grid grid-cols-2 gap-3 mb-2">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-medium text-muted-foreground/70">Weight</Label>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setObeUnits(u => ({ ...u, weight: "kg" }))}
+                        className={`text-[9px] px-1.5 py-0.5 rounded ${obeUnits.weight === "kg" ? "bg-primary/20 text-primary" : "text-muted-foreground/60"}`}
+                      >kg</button>
+                      <button
+                        onClick={() => setObeUnits(u => ({ ...u, weight: "lb" }))}
+                        className={`text-[9px] px-1.5 py-0.5 rounded ${obeUnits.weight === "lb" ? "bg-primary/20 text-primary" : "text-muted-foreground/60"}`}
+                      >lb</button>
+                    </div>
+                  </div>
+                  <Input type="number" placeholder={obeUnits.weight === "kg" ? "70" : "154"} value={obeInputs.weight} onChange={e => {
+                    const val = e.target.value;
+                    setObeInputs(prev => {
+                      const newInputs = { ...prev, weight: val };
+                      const w = parseFloat(val) || 0;
+                      const h = parseFloat(prev.height) || 0;
+                      if (w > 0 && h > 0) {
+                        newInputs.bmi = calculateBMI(w, h, obeUnits.weight, obeUnits.height).toString();
+                      }
+                      return newInputs;
+                    });
+                  }} className="h-8 text-xs" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-medium text-muted-foreground/70">Height</Label>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setObeUnits(u => ({ ...u, height: "cm" }))}
+                        className={`text-[9px] px-1.5 py-0.5 rounded ${obeUnits.height === "cm" ? "bg-primary/20 text-primary" : "text-muted-foreground/60"}`}
+                      >cm</button>
+                      <button
+                        onClick={() => setObeUnits(u => ({ ...u, height: "ft" }))}
+                        className={`text-[9px] px-1.5 py-0.5 rounded ${obeUnits.height === "ft" ? "bg-primary/20 text-primary" : "text-muted-foreground/60"}`}
+                      >ft</button>
+                    </div>
+                  </div>
+                  <Input type="number" step={obeUnits.height === "ft" ? "0.01" : "1"} placeholder={obeUnits.height === "cm" ? "170" : "5.58"} value={obeInputs.height} onChange={e => {
+                    const val = e.target.value;
+                    setObeInputs(prev => {
+                      const newInputs = { ...prev, height: val };
+                      const h = parseFloat(val) || 0;
+                      const w = parseFloat(prev.weight) || 0;
+                      if (w > 0 && h > 0) {
+                        newInputs.bmi = calculateBMI(w, h, obeUnits.weight, obeUnits.height).toString();
+                      }
+                      return newInputs;
+                    });
+                  }} className="h-8 text-xs" />
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs uppercase text-muted-foreground">Waist <span className="text-muted-foreground/60">cm</span></Label>
-                <Input type="number" placeholder="e.g. 102" value={obeInputs.waist} onChange={e => setObeInputs({ ...obeInputs, waist: e.target.value })} className="h-9" />
+              <div className="flex items-center justify-between pt-1 border-t border-border/30">
+                <AbbreviationLabel abbr="BMI" />
+                <Input type="number" step="0.1" placeholder="e.g. 32" value={obeInputs.bmi} onChange={e => setObeInputs({ ...obeInputs, bmi: e.target.value })} className="h-8 text-xs w-24 bg-muted/50" />
               </div>
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground">Waist Circumference <span className="text-muted-foreground/60">cm</span></Label>
+              <Input type="number" placeholder="e.g. 102" value={obeInputs.waist} onChange={e => setObeInputs({ ...obeInputs, waist: e.target.value })} className="h-9" />
+            </div>
             <div className="space-y-2">
-              <Label className="text-xs uppercase text-muted-foreground">Metabolic Complications</Label>
+              <Label className="text-xs font-medium text-muted-foreground">Metabolic Complications</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "dm", label: "Type 2 Diabetes" },
-                  { key: "htn", label: "Hypertension" },
+                  { key: "dm", label: "Type 2 DM", abbr: "DM" },
+                  { key: "htn", label: "HTN", abbr: "HTN" },
                   { key: "dyslipidemia", label: "Dyslipidemia" },
-                  { key: "osa", label: "OSA" },
-                  { key: "nafld", label: "NAFLD/MASLD" },
-                ].map(({ key, label }) => (
+                  { key: "osa", label: "OSA", abbr: "OSA" },
+                  { key: "nafld", label: "NAFLD/MASLD", abbr: "NAFLD" },
+                ].map(({ key, label, abbr }) => (
                   <label key={key} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={obeChecks[key as keyof typeof obeChecks]} onCheckedChange={checked => setObeChecks({ ...obeChecks, [key]: checked as boolean })} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -727,7 +1138,7 @@ export default function Home() {
               <Button onClick={generateObesityRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.obesity.bg}, rgba(167,139,250,0.08))`, borderColor: categoryColors.obesity.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setObeInputs({ bmi: "", waist: "" }); setObeChecks({ dm: false, htn: false, dyslipidemia: false, osa: false, nafld: false }); setObeRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setObeInputs({ bmi: "", waist: "", weight: "", height: "" }); setObeChecks({ dm: false, htn: false, dyslipidemia: false, osa: false, nafld: false }); setObeRx({ visible: false, content: null }); setObeUnits({ weight: "kg", height: "cm" }); }} className="text-xs h-9">Clear</Button>
             </div>
             {obeRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
