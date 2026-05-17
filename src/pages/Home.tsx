@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Activity, Droplets, Heart, Scale, Syringe, Activity as PulseIcon, Dna, FileText, ChevronRight, Info, ChevronDown, Upload, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -318,6 +318,8 @@ function OCRUpload({ onValuesExtracted }: OCRUploadProps) {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
+
   // Unified patient conditions - shared across all modules
   const [patientConditions, setPatientConditions] = useState({
     dm: false,        // Diabetes - shared
@@ -342,7 +344,17 @@ export default function Home() {
   };
 
   // Diabetes state
-  const [dmInputs, setDmInputs] = useState({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" });
+  const [dmInputs, setDmInputs] = useState({
+    fg: "",
+    a1c: "",
+    pp: "",
+    egfr: "",
+    weight: "",
+    creatinine: "",
+    age: "",
+    currentGlucose: "",
+    insulinStatus: "insulin-naive" as "insulin-naive" | "on-basal",
+  });
   const [dmRx, setDmRx] = useState<PrescriptionState>({ visible: false, content: null });
   const [dmSex, setDmSex] = useState<"male" | "female">("male");
 
@@ -842,7 +854,7 @@ export default function Home() {
               size="sm"
               onClick={() => {
                 // Clear all inputs
-                setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" });
+                setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "", currentGlucose: "", insulinStatus: "insulin-naive" });
                 setHtnInputs({ sbp: "", dbp: "", age: "" });
                 setLipInputs({ ldl: "", hdl: "", tg: "", age: "" });
                 setObeInputs({ bmi: "", waist: "", weight: "", height: "" });
@@ -870,14 +882,14 @@ export default function Home() {
               <Label className="text-xs font-medium" style={{ color: categoryColors.diabetes.accent }}>Diabetes Complications</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "cvd", label: "CVD" },
-                  { key: "hf", label: "Heart Failure" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "obesity", label: "Obesity" },
-                ].map(({ key, label }) => (
+                  { key: "cvd", label: "CVD", abbr: "CVD" },
+                  { key: "hf", label: "HF", abbr: "HF" },
+                  { key: "ckd", label: "CKD", abbr: "CKD" },
+                  { key: "obesity", label: "Obesity", abbr: null },
+                ].map(({ key, label, abbr }) => (
                   <label key={`dm-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -888,15 +900,15 @@ export default function Home() {
               <Label className="text-xs font-medium" style={{ color: categoryColors.hypertension.accent }}>Hypertension Comorbidities</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "dm", label: "Diabetes" },
-                  { key: "ckd", label: "CKD" },
-                  { key: "cad", label: "CAD" },
-                  { key: "stroke", label: "Prior Stroke" },
-                  { key: "hf", label: "Heart Failure" },
-                ].map(({ key, label }) => (
+                  { key: "dm", label: "DM", abbr: "DM" },
+                  { key: "ckd", label: "CKD", abbr: "CKD" },
+                  { key: "cad", label: "CAD", abbr: "CAD" },
+                  { key: "stroke", label: "Prior Stroke", abbr: null },
+                  { key: "hf", label: "HF", abbr: "HF" },
+                ].map(({ key, label, abbr }) => (
                   <label key={`htn-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -907,15 +919,15 @@ export default function Home() {
               <Label className="text-xs font-medium" style={{ color: categoryColors.lipid.accent }}>ASCVD Risk Factors</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "dm", label: "Diabetes" },
-                  { key: "smoker", label: "Smoker" },
-                  { key: "htn", label: "HTN" },
-                  { key: "fhx", label: "Family History" },
-                  { key: "ascvd", label: "ASCVD" },
-                ].map(({ key, label }) => (
+                  { key: "dm", label: "DM", abbr: "DM" },
+                  { key: "smoker", label: "Smoker", abbr: null },
+                  { key: "htn", label: "HTN", abbr: "HTN" },
+                  { key: "fhx", label: "FHx", abbr: "FHx" },
+                  { key: "ascvd", label: "ASCVD", abbr: "ASCVD" },
+                ].map(({ key, label, abbr }) => (
                   <label key={`lip-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -926,15 +938,15 @@ export default function Home() {
               <Label className="text-xs font-medium" style={{ color: categoryColors.obesity.accent }}>Metabolic Complications</Label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: "dm", label: "Type 2 DM" },
-                  { key: "htn", label: "HTN" },
-                  { key: "dyslipidemia", label: "Dyslipidemia" },
-                  { key: "osa", label: "OSA" },
-                  { key: "nafld", label: "NAFLD" },
-                ].map(({ key, label }) => (
+                  { key: "dm", label: "DM", abbr: "DM" },
+                  { key: "htn", label: "HTN", abbr: "HTN" },
+                  { key: "dyslipidemia", label: "Dyslipidemia", abbr: null },
+                  { key: "osa", label: "OSA", abbr: "OSA" },
+                  { key: "nafld", label: "NAFLD", abbr: "NAFLD" },
+                ].map(({ key, label, abbr }) => (
                   <label key={`obe-${key}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/40 rounded-md border border-border/50 cursor-pointer hover:bg-muted/60 transition-colors">
                     <Checkbox checked={patientConditions[key as keyof typeof patientConditions]} onCheckedChange={() => toggleCondition(key as keyof typeof patientConditions)} className="h-3.5 w-3.5" />
-                    <span className="text-xs">{label}</span>
+                    {abbr ? <AbbreviationLabel abbr={abbr} /> : <span className="text-xs">{label}</span>}
                   </label>
                 ))}
               </div>
@@ -1199,11 +1211,177 @@ export default function Home() {
               </CollapsibleContent>
             </Collapsible>
 
+            {/* Insulin Infusion Calculator */}
+            <Collapsible className="border border-border/40 rounded-lg overflow-hidden">
+              <CollapsibleTrigger asChild>
+                <button className="w-full px-3 py-2 flex items-center justify-between bg-red-500/10 hover:bg-red-500/15 transition-colors text-xs font-medium text-red-500">
+                  <span className="flex items-center gap-2">
+                    <Activity className="h-3.5 w-3.5" />
+                    IV Insulin Infusion Calculator (DKA/HHS)
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3 space-y-4 bg-muted/10">
+                {/* Warning Banner */}
+                <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/30">
+                  <p className="text-[10px] text-red-500 font-medium">
+                    Critical Care Setting Only — Requires continuous monitoring. Check glucose hourly (or q2h when stable).
+                  </p>
+                </div>
+
+                {/* Input Section */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">Patient Parameters</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-medium text-muted-foreground/70">Weight (kg)</Label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 70"
+                        value={dmInputs.weight}
+                        onChange={e => setDmInputs({ ...dmInputs, weight: e.target.value })}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] font-medium text-muted-foreground/70">Current Glucose (mg/dL)</Label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 450"
+                        value={dmInputs.currentGlucose || ""}
+                        onChange={e => setDmInputs({ ...dmInputs, currentGlucose: e.target.value })}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    <Label className="text-[10px] font-medium text-muted-foreground/70">Insulin Status</Label>
+                    <Select
+                      value={dmInputs.insulinStatus || "insulin-naive"}
+                      onValueChange={(v) => setDmInputs({ ...dmInputs, insulinStatus: v })}
+                    >
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="insulin-naive">Insulin-naive / Type 1 DKA</SelectItem>
+                        <SelectItem value="on-basal">Already on basal insulin (T2DM/HHS)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Calculated Results */}
+                {dmInputs.weight && (
+                  <div className="p-2.5 rounded-lg bg-red-500/5 border border-red-500/20">
+                    <p className="text-[10px] font-medium text-red-500 uppercase mb-2">Calculated Infusion</p>
+                    <div className="space-y-2">
+                      <div className="p-2 rounded bg-background/50">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-muted-foreground">Initial Bolus (IV)</span>
+                          <span className="text-sm font-bold text-red-500">
+                            {Math.round((parseFloat(dmInputs.weight) || 0) * 0.1)} units
+                          </span>
+                        </div>
+                        <p className="text-[9px] text-muted-foreground mt-0.5">0.1 units/kg (max 10 units)</p>
+                      </div>
+
+                      <div className="p-2 rounded bg-background/50 border border-red-500/20">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-muted-foreground">Infusion Rate</span>
+                          <span className="text-sm font-bold text-red-500">
+                            {(() => {
+                              const weight = parseFloat(dmInputs.weight) || 0;
+                              const status = dmInputs.insulinStatus || "insulin-naive";
+                              if (weight === 0) return "0.00";
+                              const multiplier = status === "insulin-naive" ? 0.1 : 0.05;
+                              return (weight * multiplier).toFixed(2);
+                            })()} units/hour
+                          </span>
+                        </div>
+                        <p className="text-[9px] text-muted-foreground mt-0.5">
+                          {(dmInputs.insulinStatus || "insulin-naive") === "insulin-naive"
+                            ? "0.1 units/kg/hr (DKA/insulin-naive)"
+                            : "0.05-0.1 units/kg/hr (on basal insulin)"}
+                        </p>
+                      </div>
+
+                      <div className="p-2 rounded bg-background/50">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] text-muted-foreground">Daily Requirement</span>
+                          <span className="text-sm font-medium text-foreground">
+                            {(() => {
+                              const weight = parseFloat(dmInputs.weight) || 0;
+                              const status = dmInputs.insulinStatus || "insulin-naive";
+                              if (weight === 0) return "0";
+                              const hourly = status === "insulin-naive" ? weight * 0.1 : weight * 0.05;
+                              return Math.round(hourly * 24);
+                            })()} units/day
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Protocol Reference */}
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase mb-2">DKA/HHS Protocol Summary</p>
+                  <div className="space-y-2 text-[10px]">
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground mb-1">Phase 1: Initial Resuscitation</p>
+                      <ul className="text-muted-foreground space-y-0.5 list-disc pl-3">
+                        <li>Fluid: 1L NS over 1 hour (or 15-20 mL/kg)</li>
+                        <li>Insulin: Hold until glucose &lt;200 mg/dL AND anion gap closed</li>
+                        <li>Start insulin if K+ &gt;3.3 mEq/L</li>
+                      </ul>
+                    </div>
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground mb-1">Phase 2: Insulin Infusion</p>
+                      <ul className="text-muted-foreground space-y-0.5 list-disc pl-3">
+                        <li>Bolus: 0.1 units/kg IV (optional per protocol)</li>
+                        <li>Continuous: 0.1 units/kg/hr (DKA) or 0.05-0.1 (HHS)</li>
+                        <li>Target glucose fall: 50-70 mg/dL/hour</li>
+                      </ul>
+                    </div>
+                    <div className="p-2 rounded bg-background/50">
+                      <p className="font-medium text-foreground mb-1">Phase 3: Glucose Transition</p>
+                      <ul className="text-muted-foreground space-y-0.5 list-disc pl-3">
+                        <li>When glucose &lt;200 mg/dL: Add dextrose (D5W or D10W)</li>
+                        <li>Continue insulin until gap closed for DKA</li>
+                        <li>Transition to SC insulin when eating</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hourly Monitoring */}
+                <div className="p-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+                  <p className="text-[10px] font-medium text-amber-500 uppercase mb-1.5">Hourly Monitoring Checklist</p>
+                  <div className="grid grid-cols-2 gap-1 text-[9px]">
+                    <div className="flex items-center gap-1 p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">Glucose (q1h)</span>
+                    </div>
+                    <div className="flex items-center gap-1 p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">K+ (q2-4h)</span>
+                    </div>
+                    <div className="flex items-center gap-1 p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">Anion gap</span>
+                    </div>
+                    <div className="flex items-center gap-1 p-1 rounded bg-background/50">
+                      <span className="text-muted-foreground">Fluid balance</span>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
             <div className="flex gap-2 pt-1">
               <Button onClick={generateDiabetesRx} className="flex-1 text-xs h-9" style={{ background: `linear-gradient(135deg, ${categoryColors.diabetes.bg}, rgba(248,113,113,0.08))`, borderColor: categoryColors.diabetes.border }} variant="outline">
                 Generate Rx <ChevronRight className="h-3.5 w-3.5 ml-1" />
               </Button>
-              <Button variant="outline" onClick={() => { setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "" }); setPatientConditions(prev => ({ ...prev, cvd: false, hf: false, ckd: false, obesity: false })); setDmRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
+              <Button variant="outline" onClick={() => { setDmInputs({ fg: "", a1c: "", pp: "", egfr: "", weight: "", creatinine: "", age: "", currentGlucose: "", insulinStatus: "insulin-naive" }); setPatientConditions(prev => ({ ...prev, cvd: false, hf: false, ckd: false, obesity: false })); setDmRx({ visible: false, content: null }); }} className="text-xs h-9">Clear</Button>
             </div>
             {dmRx.visible && (
               <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50 animate-in fade-in slide-in-from-top-2">
