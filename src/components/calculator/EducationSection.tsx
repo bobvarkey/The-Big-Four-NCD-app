@@ -1,6 +1,26 @@
 import { Card } from "@/components/ui/card";
-import { Heart, TrendingUp, AlertTriangle, Dna, Activity, ShieldCheck, ListChecks, Stethoscope, Footprints } from "lucide-react";
+import { Heart, TrendingUp, AlertTriangle, Dna, Activity, ShieldCheck, ListChecks, Stethoscope, Footprints, ScanLine, ChevronDown, Sparkles, BookOpen } from "lucide-react";
 import { SectionCard } from "@/components/ui/section-card";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+
+// Inline citation marker — renders a clickable superscript with a tooltip
+function Cite({ n, source }: { n: number; source: string }) {
+  return (
+    <Tooltip delayDuration={150}>
+      <TooltipTrigger asChild>
+        <sup className="ml-0.5 cursor-help rounded bg-primary/15 px-1 py-0.5 text-[9px] font-bold text-primary hover:bg-primary/25 transition-colors">
+          [{n}]
+        </sup>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-sm">
+        <div className="flex gap-1.5">
+          <BookOpen className="h-3 w-3 mt-0.5 shrink-0 text-primary" />
+          <span className="leading-relaxed">{source}</span>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 // ─── Primary Prevention reference content (migrated from former Prevention tab) ───
 const PRIMARY_PREVENTION_STEPS = [
@@ -428,7 +448,7 @@ export default function EducationSection() {
           </div>
           <h3 className="font-display text-lg font-bold text-foreground">Lp(a) — Lipoprotein(a)</h3>
         </div>
-        
+
         {/* Lp(a) Levels with Color-Coded Icons */}
         <div className="space-y-3 mb-4">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
@@ -439,7 +459,7 @@ export default function EducationSection() {
               <p className="text-sm font-semibold text-success">Optimal: ≤14 mg/dL (≤35 nmol/L)</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/20">
               <Heart className="h-4 w-4 text-primary" />
@@ -448,7 +468,7 @@ export default function EducationSection() {
               <p className="text-sm font-semibold text-primary">Normal: ≤30 mg/dL (≤75 nmol/L)</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 rounded-lg bg-danger/5 border border-danger/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-danger/20">
               <AlertTriangle className="h-4 w-4 text-danger" />
@@ -469,7 +489,7 @@ export default function EducationSection() {
               Lp(a) 10–49 mg/dL (25–124 nmol/L) → <strong className="text-primary">28% higher</strong> cardiovascular risk
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-warning/20">
               <TrendingUp className="h-3 w-3 text-warning" />
@@ -478,7 +498,7 @@ export default function EducationSection() {
               Lp(a) 50–99 mg/dL (125–249 nmol/L) → <strong className="text-warning">44% higher</strong> cardiovascular risk
             </p>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-danger/20">
               <TrendingUp className="h-3 w-3 text-danger" />
@@ -502,7 +522,7 @@ export default function EducationSection() {
           </div>
           <h3 className="font-display text-lg font-bold text-foreground">Lp(a) & Relative ASCVD Risk</h3>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -603,7 +623,7 @@ export default function EducationSection() {
           </div>
           <h3 className="font-display text-lg font-bold text-foreground">ApoB — Apolipoprotein B</h3>
         </div>
-        
+
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-3 rounded-lg bg-purple-500/5 border border-purple-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-purple-500/20 flex-shrink-0">
@@ -613,7 +633,7 @@ export default function EducationSection() {
               LDL is sometimes <strong className="text-purple-500">calculated</strong>; ApoB is always <strong className="text-purple-500">measured</strong>.
             </p>
           </div>
-          
+
           <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-500/20 flex-shrink-0">
               <Activity className="h-4 w-4 text-blue-500" />
@@ -622,7 +642,7 @@ export default function EducationSection() {
               LDL is just one of three atherogenic particles. <strong className="text-blue-500">ApoB counts all of them.</strong>
             </p>
           </div>
-          
+
           <div className="flex items-start gap-3 p-3 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-cyan-500/20 flex-shrink-0">
               <TrendingUp className="h-4 w-4 text-cyan-500" />
@@ -631,7 +651,7 @@ export default function EducationSection() {
               ApoB is a <strong className="text-cyan-500">more accurate predictor</strong> of cardiovascular events than LDL-C.
             </p>
           </div>
-          
+
           <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-500/20 flex-shrink-0">
               <Heart className="h-4 w-4 text-emerald-500" />
@@ -640,7 +660,7 @@ export default function EducationSection() {
               When ApoB and LDL-C disagree, <strong className="text-emerald-500">ApoB is the better predictor of risk</strong>.
             </p>
           </div>
-          
+
           <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-amber-500/20 flex-shrink-0">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
@@ -774,6 +794,187 @@ export default function EducationSection() {
               </span>
               <span className="text-sm leading-snug text-foreground flex-1 text-right">{row.interp}</span>
             </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      {/* ─── CAC >100 with PREVENT ─── */}
+      <SectionCard
+        title="CAC >100 — How It Reclassifies PREVENT-Based Risk"
+        tone="amber"
+        icon={<ScanLine className="h-4 w-4" />}
+        defaultOpen={false}
+      >
+        <p className="mb-3 text-sm text-foreground leading-relaxed">
+          A CAC score above 100 doesn't literally change the PREVENT equation, but it <strong>reclassifies risk upward</strong> when used as a decision aid alongside PREVENT.<Cite n={1} source="Grundy SM, et al. 2018 AHA/ACC/Multisociety Cholesterol Guideline. Circulation. 2019;139(25):e1082–e1143." /> CAC &gt;100 typically pushes an intermediate-risk patient toward more aggressive prevention — especially statin therapy — because event rates and expected treatment benefit are higher.<Cite n={2} source="Budoff MJ, et al. Ten-year association of CAC with all-cause and cause-specific mortality. JACC. 2018;72(4):434–447." />
+        </p>
+
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1.5">How to Interpret</p>
+          <p className="text-sm text-foreground leading-relaxed">
+            PREVENT is a clinical risk estimator based on traditional risk factors;<Cite n={3} source="Khan SS, et al. Development and validation of the PREVENT equations. Circulation. 2024;149:430–449." /> CAC is a <strong>direct measure of coronary atherosclerotic burden</strong>. The 2018 ACC/AHA cholesterol guidance encourages statin initiation when CAC ≥100 AU or ≥75th percentile for age/sex/ethnicity.<Cite n={1} source="Grundy SM, et al. 2018 AHA/ACC/Multisociety Cholesterol Guideline. Circulation. 2019;139(25):e1082–e1143." />
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1.5">Practical Impact</p>
+          <ul className="text-sm text-foreground leading-relaxed space-y-1.5 list-disc list-inside marker:text-primary">
+            <li>If PREVENT is borderline or intermediate, CAC &gt;100 supports <strong>starting or intensifying statin therapy</strong> rather than deferring treatment.<Cite n={1} source="Grundy SM, et al. 2018 AHA/ACC/Multisociety Cholesterol Guideline. Circulation. 2019;139(25):e1082–e1143." /></li>
+            <li>CAC &gt;100 implies the patient's true risk is likely <strong>higher than PREVENT alone suggests</strong> — it adds direct evidence of established plaque burden.<Cite n={4} source="MESA (Multi-Ethnic Study of Atherosclerosis): CAC improves discrimination over traditional risk factors. McClelland RL, et al. JACC. 2015;66:1643–1653." /></li>
+            <li>In some studies, CAC ≥100 conferred risk approaching <strong>secondary-prevention-like levels</strong>, especially at higher CAC burdens.<Cite n={5} source="Mortensen MB, et al. Association of CAC with risk approaching secondary prevention. JAMA Cardiol. 2022;7(2):192–201." /></li>
+          </ul>
+        </div>
+
+        {/* What to do next — guideline-style action callout */}
+        <div className="rounded-lg border-2 border-primary/40 bg-gradient-to-br from-primary/10 to-primary/5 p-4 mb-4 shadow-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/20">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+            </span>
+            <p className="text-xs font-bold uppercase tracking-wider text-primary">What to Do Next — Guideline-Directed Action</p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-md border border-orange-500/30 bg-orange-500/5 p-3">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="rounded bg-orange-500/20 px-2 py-0.5 text-[11px] font-bold text-orange-600 dark:text-orange-400">
+                  CAC ≥100 AU
+                </span>
+                <span className="text-xs font-semibold text-foreground">→ START or INTENSIFY statin</span>
+              </div>
+              <ul className="text-xs text-foreground leading-relaxed space-y-1 ml-1">
+                <li>• Initiate <strong>high-intensity statin</strong> (atorvastatin 40–80 mg or rosuvastatin 20–40 mg).<Cite n={1} source="2018 AHA/ACC/Multisociety Cholesterol Guideline — Class IIa recommendation." /></li>
+                <li>• LDL-C target <strong>&lt;55 mg/dL (&lt;1.4 mmol/L)</strong>; non-HDL-C &lt;85 mg/dL.</li>
+                <li>• Add <strong>ezetimibe 10 mg</strong> if LDL-C goal not met at 4–12 weeks.</li>
+                <li>• Lifestyle reinforcement, BP &lt;130/80, A1c optimization.</li>
+              </ul>
+            </div>
+
+            <div className="rounded-md border border-danger/30 bg-danger/5 p-3">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="rounded bg-danger/20 px-2 py-0.5 text-[11px] font-bold text-danger">
+                  CAC ≥300 AU
+                </span>
+                <span className="text-xs font-semibold text-foreground">→ MAXIMAL statin + add-on therapy</span>
+              </div>
+              <ul className="text-xs text-foreground leading-relaxed space-y-1 ml-1">
+                <li>• <strong>Maximally tolerated high-intensity statin</strong> + ezetimibe upfront.<Cite n={5} source="Mortensen MB, et al. CAC ≥300 confers risk approaching established ASCVD. JAMA Cardiol. 2022." /></li>
+                <li>• LDL-C target <strong>&lt;55 mg/dL</strong>; consider <strong>&lt;40 mg/dL if CAC ≥1000</strong>.</li>
+                <li>• Add <strong>PCSK9 inhibitor or bempedoic acid</strong> if LDL-C goals unmet.</li>
+                <li>• Consider <strong>low-dose aspirin</strong> after shared decision-making (bleeding risk vs. event risk).<Cite n={6} source="Cainzos-Achirica M, et al. Aspirin for primary prevention: CAC-guided decision-making. JACC. 2020;76:1499–1511." /></li>
+                <li>• Functional/anatomic testing if symptoms — consider CCTA or stress imaging.</li>
+              </ul>
+            </div>
+          </div>
+
+          <p className="mt-3 text-[11px] text-muted-foreground italic leading-relaxed">
+            These actions reflect 2018 ACC/AHA cholesterol guideline recommendations operationalized for CAC-defined high risk. Always individualize via shared decision-making.
+          </p>
+        </div>
+
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">CAC Rule of Thumb</p>
+        <div className="space-y-2">
+          {[
+            { range: "0",        interp: "Risk often LOWER than PREVENT alone suggests — defer/avoid statin reasonable", tone: "bg-success/15 text-success" },
+            { range: "1–99",     interp: "Modest upward shift — moderate-intensity statin generally favored",            tone: "bg-amber-500/15 text-amber-600 dark:text-amber-400" },
+            { range: "≥100",     interp: "Meaningful upward shift — favors pharmacologic prevention (high-intensity statin)", tone: "bg-orange-500/15 text-orange-600 dark:text-orange-400" },
+            { range: "≥300",     interp: "Very high risk — treat aggressively; consider tighter LDL-C targets",          tone: "bg-danger/15 text-danger" },
+            { range: "≥1000",    interp: "Risk approaching secondary prevention — maximal therapy warranted",            tone: "bg-danger/25 text-danger font-bold" },
+          ].map((row) => (
+            <div
+              key={row.range}
+              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/20 px-3 py-2.5"
+            >
+              <span className={`rounded px-2 py-0.5 text-[11px] font-bold whitespace-nowrap ${row.tone}`}>
+                CAC {row.range}
+              </span>
+              <span className="text-sm leading-snug text-foreground flex-1 text-right">{row.interp}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-3 text-xs text-muted-foreground italic leading-relaxed">
+          Bottom line: CAC &gt;100 upgrades the PREVENT-based risk discussion and usually strengthens the case for statins and tighter preventive targets.
+        </p>
+      </SectionCard>
+
+      {/* ─── CAC Threshold Quick-Guide (clickable) ─── */}
+      <SectionCard
+        title="CAC Threshold Quick-Guide"
+        tone="indigo"
+        icon={<ScanLine className="h-4 w-4" />}
+        defaultOpen={false}
+      >
+        <p className="mb-3 text-xs text-muted-foreground">
+          Click any range to expand its clinical interpretation, expected event risk, and recommended action.
+        </p>
+        <div className="space-y-2">
+          {[
+            {
+              range: "0",
+              label: "CAC 0",
+              tone: "bg-success/15 text-success border-success/30",
+              summary: "No detectable calcified plaque",
+              risk: "Very low 10-yr ASCVD risk (~1–2%)",
+              interp: "Risk is often LOWER than PREVENT alone suggests. The 'power of zero' — strong negative predictive value out to 10 years in low/intermediate-risk adults.",
+              action: "Reasonable to DEFER statin in borderline/intermediate PREVENT risk (unless diabetes, FH, smoker, or strong family history). Reassess CAC in 5–10 years.",
+            },
+            {
+              range: "1–99",
+              label: "CAC 1–99 AU",
+              tone: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+              summary: "Mild calcified plaque burden",
+              risk: "Modest upward shift in risk vs. CAC 0",
+              interp: "Confirms presence of subclinical atherosclerosis. Particularly meaningful in younger adults (<55 y) where any CAC is abnormal.",
+              action: "Initiate moderate-intensity statin. LDL-C target <70 mg/dL (<1.8 mmol/L). Address all risk factors aggressively.",
+            },
+            {
+              range: "≥100",
+              label: "CAC ≥100 AU",
+              tone: "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/30",
+              summary: "Significant plaque burden — 2018 ACC/AHA statin trigger",
+              risk: "Meaningful upward shift; risk often >7.5%/10-yr regardless of PREVENT estimate",
+              interp: "True risk is likely higher than PREVENT alone suggests. CAC ≥100 OR ≥75th percentile is the guideline-endorsed threshold favoring statin initiation when treatment decision is uncertain.",
+              action: "Start (or intensify to) high-intensity statin. LDL-C target <55 mg/dL (<1.4 mmol/L). Consider ezetimibe add-on if LDL-C goal not met.",
+            },
+            {
+              range: "≥300",
+              label: "CAC ≥300 AU",
+              tone: "bg-danger/15 text-danger border-danger/30",
+              summary: "Extensive coronary calcification",
+              risk: "Very high risk — approaching secondary-prevention event rates in some cohorts",
+              interp: "Patient is functionally in a 'CAC-defined high-risk' category. Treat as if established ASCVD risk equivalent for lipid targets.",
+              action: "Maximal-intensity statin + ezetimibe. LDL-C target <55 mg/dL (consider <40 mg/dL if CAC ≥1000). Add PCSK9 inhibitor if goals unmet. Aspirin discussion warranted.",
+            },
+          ].map((row) => (
+            <details
+              key={row.range}
+              className={`group rounded-lg border bg-muted/10 transition-colors ${row.tone.split(" ").filter(c => c.startsWith("border-")).join(" ")}`}
+            >
+              <summary className="flex cursor-pointer items-center justify-between gap-3 px-3 py-2.5 list-none [&::-webkit-details-marker]:hidden">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <span className={`rounded px-2 py-0.5 text-[11px] font-bold whitespace-nowrap ${row.tone.split(" ").filter(c => !c.startsWith("border-")).join(" ")}`}>
+                    {row.label}
+                  </span>
+                  <span className="text-sm text-foreground truncate">{row.summary}</span>
+                </div>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 shrink-0" />
+              </summary>
+              <div className="space-y-2 border-t border-border/50 px-3 py-3 text-sm">
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Event Risk: </span>
+                  <span className="text-foreground">{row.risk}</span>
+                </div>
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Interpretation: </span>
+                  <span className="text-foreground leading-relaxed">{row.interp}</span>
+                </div>
+                <div>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">Recommended Action: </span>
+                  <span className="text-foreground leading-relaxed">{row.action}</span>
+                </div>
+              </div>
+            </details>
           ))}
         </div>
       </SectionCard>

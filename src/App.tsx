@@ -3,7 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { TabNavigation } from "@/components/TabNavigation";
 import Home from "@/pages/Home";
+import Diabetes from "@/pages/Diabetes";
+import Hypertension from "@/pages/Hypertension";
+import Lipids from "@/pages/Lipids";
 import InsulinTitration from "@/calculators/diabetes/InsulinTitration";
 import HypoRiskCalculator from "@/calculators/diabetes/HypoRisk";
 import RenalDoseAdjustment from "@/calculators/diabetes/RenalDosing";
@@ -28,8 +32,13 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <TabNavigation />
         <Routes>
           <Route path="/" element={<Home />} />
+          {/* Tab Pages */}
+          <Route path="/diabetes" element={<Diabetes />} />
+          <Route path="/hypertension" element={<Hypertension />} />
+          <Route path="/lipids" element={<Lipids />} />
           {/* Diabetes Calculators */}
           <Route path="/insulin-titration" element={<InsulinTitration />} />
           <Route path="/sliding-scale" element={<SlidingScaleInsulin />} />
