@@ -912,23 +912,24 @@ function ComprehensivePrescriptionGenerator() {
         </div>
 
         {/* Liver Disease Section */}
-        <div className="mb-6 p-4 bg-white border border-border rounded-lg">
+        <div className="mb-6 p-4 bg-black border border-border/40 rounded-lg">
           <div className="flex items-center space-x-2 mb-3">
             <Checkbox
               id="liver"
               checked={hasLiverDisease}
               onCheckedChange={(checked) => setHasLiverDisease(checked as boolean)}
+              className="border-white/50"
             />
-            <Label htmlFor="liver" className="text-sm font-medium cursor-pointer">
+            <Label htmlFor="liver" className="text-sm font-medium cursor-pointer text-white">
               Chronic Liver Disease (requires medication adjustments)
             </Label>
           </div>
 
           {hasLiverDisease && (
             <div className="ml-6 space-y-2">
-              <Label className="text-xs text-muted-foreground">Severity:</Label>
+              <Label className="text-xs text-white/70">Severity:</Label>
               <Select value={liverSeverity} onValueChange={(v: "compensated" | "decompensated") => setLiverSeverity(v)}>
-                <SelectTrigger className="w-full h-9">
+                <SelectTrigger className="w-full h-9 bg-black/50 border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -936,7 +937,7 @@ function ComprehensivePrescriptionGenerator() {
                   <SelectItem value="decompensated">Decompensated Cirrhosis/Severe Hepatic Impairment</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-white/60 mt-2">
                 ℹ️ Medications will be adjusted: Lower starting doses, more frequent monitoring, specific contraindications
               </p>
             </div>
