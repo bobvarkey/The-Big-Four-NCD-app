@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Pill, Syringe, ChevronRight, ArrowRight, CheckCircle2, AlertTriangle, Heart, Activity, Scale, Brain, ArrowDown, FileText } from "lucide-react";
+import { Pill, Syringe, ChevronRight, ArrowRight, CheckCircle2, AlertTriangle, Heart, Activity, Scale, Brain, ArrowDown, FileText, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,11 @@ interface AlgorithmStepProps {
   icon: React.ReactNode;
   tone: "primary" | "accent" | "warning" | "danger";
   isLast?: boolean;
+  showInsulinRef?: boolean;
+  onToggleInsulinRef?: () => void;
 }
 
-const AlgorithmStep = ({ step, title, description, criteria, medications, icon, tone, isLast }: AlgorithmStepProps) => {
+const AlgorithmStep = ({ step, title, description, criteria, medications, icon, tone, isLast, showInsulinRef, onToggleInsulinRef }: AlgorithmStepProps) => {
   const getToneClasses = () => {
     switch (tone) {
       case "primary": return "border-primary/40 bg-primary/5";
@@ -75,6 +77,17 @@ const AlgorithmStep = ({ step, title, description, criteria, medications, icon, 
                     </div>
                   ))}
                 </div>
+                {isLast && onToggleInsulinRef && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onToggleInsulinRef}
+                    className="mt-2"
+                  >
+                    {showInsulinRef ? "Hide Insulin Reference" : "Show Insulin Reference Charts"}
+                    <ChevronRight className={`h-4 w-4 ml-1 transition-transform ${showInsulinRef ? "rotate-90" : ""}`} />
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -89,8 +102,57 @@ const AlgorithmStep = ({ step, title, description, criteria, medications, icon, 
   );
 };
 
+// Insulin Reference Section
+const InsulinReferenceSection = () => (
+  <div className="mt-4 p-4 rounded-lg border-2 border-destructive/30 bg-destructive/5">
+    <h4 className="font-semibold mb-3 flex items-center gap-2">
+      <Syringe className="h-4 w-4" />
+      Insulin Types Quick Reference
+    </h4>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Insulin Pharmacology Chart</p>
+        <img
+          src="/images/Insulins.jpg"
+          alt="Types of Insulin - Onset, Peak, Duration"
+          className="w-full rounded-lg border shadow-sm"
+        />
+        <p className="text-xs text-muted-foreground">
+          Complete guide: Rapid, Short, Intermediate, Long-acting insulin
+        </p>
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Activity Profile Graph</p>
+        <img
+          src="/images/insulin-types-graph.png"
+          alt="Insulin Activity Over Time"
+          className="w-full rounded-lg border shadow-sm"
+        />
+        <p className="text-xs text-muted-foreground">
+          Visual comparison of insulin action curves
+        </p>
+      </div>
+    </div>
+    <div className="mt-4 flex gap-2">
+      <Link to="/insulin-titration">
+        <Button variant="outline" size="sm">
+          Insulin Titration Tool
+          <ChevronRight className="h-4 w-4 ml-1" />
+        </Button>
+      </Link>
+      <Link to="/sliding-scale">
+        <Button variant="outline" size="sm">
+          Sliding Scale
+          <ChevronRight className="h-4 w-4 ml-1" />
+        </Button>
+      </Link>
+    </div>
+  </div>
+);
+
 // Treatment Algorithm Component
 const TreatmentAlgorithm = () => {
+  const [showInsulinRef, setShowInsulinRef] = useState(false);
   const steps: AlgorithmStepProps[] = [
     {
       step: 1,
@@ -166,8 +228,9 @@ const TreatmentAlgorithm = () => {
       description: "For severe hyperglycemia when oral agents insufficient",
       criteria: "HbA1c ≥9.0% OR RBS >300 mg/dL OR symptomatic",
       medications: [
-        { name: "Basal Insulin", class: "Insulin", notes: "Glargine, detemir, degludec — start 10U or 0.1-0.2 U/kg" },
-        { name: "Prandial Insulin", class: "Insulin", notes: "Add if postprandial excursions — rapid-acting" },
+        { name: "Basal Insulin", class: "Long-acting", notes: "Glargine, detemir, degludec — start 10U or 0.1-0.2 U/kg" },
+        { name: "Prandial Insulin", class: "Rapid-acting", notes: "Lispro, aspart, glulisine — add if postprandial excursions" },
+        { name: "NPH (Intermediate)", class: "Mixed", notes: "Can mix with Regular — see Mixing Insulin guide" },
       ],
       icon: <Syringe className="h-5 w-5" />,
       tone: "danger",
@@ -196,8 +259,14 @@ const TreatmentAlgorithm = () => {
       <CardContent>
         <div className="space-y-2">
           {steps.map((step, index) => (
-            <AlgorithmStep key={index} {...step} />
+            <AlgorithmStep
+              key={index}
+              {...step}
+              showInsulinRef={showInsulinRef}
+              onToggleInsulinRef={step.isLast ? () => setShowInsulinRef(!showInsulinRef) : undefined}
+            />
           ))}
+          {showInsulinRef && <InsulinReferenceSection />}
         </div>
       </CardContent>
     </Card>
@@ -556,22 +625,43 @@ const ManagementChecklist = () => {
   );
 };
 
+import InsulinGuide from "./InsulinGuide";
+
 // Main Component
 export default function DiabetesTreatment() {
+  const [activeTab, setActiveTab] = useState<"algorithm" | "glp1" | "drugs" | "insulin" | "checklist">("algorithm");
+
   return (
     <div className="space-y-4">
-      <TreatmentAlgorithm />
-
-      <Separator />
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <GLP1AdministrationGuide />
-        <DrugClassesComparison />
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {[
+          { id: "algorithm", label: "Treatment Algorithm", icon: Brain },
+          { id: "glp1", label: "GLP-1 Guide", icon: Syringe },
+          { id: "insulin", label: "Insulin Guide", icon: Activity },
+          { id: "drugs", label: "Drug Classes", icon: Pill },
+          { id: "checklist", label: "Care Checklist", icon: FileText },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === tab.id
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            }`}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <Separator />
-
-      <ManagementChecklist />
+      {activeTab === "algorithm" && <TreatmentAlgorithm />}
+      {activeTab === "glp1" && <GLP1AdministrationGuide />}
+      {activeTab === "insulin" && <InsulinGuide />}
+      {activeTab === "drugs" && <DrugClassesComparison />}
+      {activeTab === "checklist" && <ManagementChecklist />}
     </div>
   );
 }

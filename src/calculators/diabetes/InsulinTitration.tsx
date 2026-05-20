@@ -70,6 +70,10 @@ const InsulinTitration = () => {
     { day: 3, fasting: 0 },
   ]);
 
+  // Allow calculator to work without patient data
+  const patientAge = patient?.age || 50;
+  const patientEGFR = patient?.eGFR || 90;
+
   const updateReading = (index: number, value: number) => {
     setReadings(prev => prev.map((r, i) => i === index ? { ...r, fasting: value } : r));
   };
@@ -126,24 +130,6 @@ const InsulinTitration = () => {
     return "text-destructive font-medium";
   };
 
-  if (!hasPatient) {
-    return (
-      <div className="space-y-5 animate-slide-in">
-        <h1 className="text-xl font-heading font-bold">Insulin Titration Calculator</h1>
-        <div className="clinical-card flex flex-col items-center justify-center py-12 text-center">
-          <UserX className="w-12 h-12 text-muted-foreground mb-4" />
-          <h2 className="text-lg font-heading font-semibold mb-2">No Patient Data</h2>
-          <p className="text-sm text-muted-foreground mb-4 max-w-md">
-            Please enter patient demographics first. Insulin titration protocol selection depends on age, eGFR, and other patient factors.
-          </p>
-          <Button onClick={() => navigate("/patient")}>
-            Enter Patient Data
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-5 animate-slide-in">
       <div>
@@ -151,13 +137,17 @@ const InsulinTitration = () => {
         <p className="text-sm text-muted-foreground">ADA basal insulin dose adjustment based on fasting BG</p>
       </div>
 
-      {/* Patient context */}
-      {patient && (
+      {/* Patient context - optional */}
+      {hasPatient ? (
         <div className="clinical-card p-3 bg-muted/30">
           <p className="text-sm"><strong>{patient.name}</strong> · {patient.age}y · eGFR {patient.eGFR} · HbA1c {patient.hba1c}%</p>
           {(patient.age > 65 || patient.eGFR < 30) && (
             <p className="text-xs text-warning mt-1">⚠ Conservative protocol auto-selected (age &gt;65 or eGFR &lt;30)</p>
           )}
+        </div>
+      ) : (
+        <div className="clinical-card p-3 bg-muted/30 border-dashed">
+          <p className="text-sm text-muted-foreground">ℹ️ No patient data — using default protocol. <Button variant="link" size="sm" onClick={() => navigate("/")}>Add patient data</Button> for personalized protocol selection.</p>
         </div>
       )}
 
